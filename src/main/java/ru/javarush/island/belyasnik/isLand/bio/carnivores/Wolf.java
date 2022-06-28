@@ -15,7 +15,7 @@ public class Wolf extends Animal {
     public static final int[][] menu; // рацион (вид, вероятность, предел насыщения)/d
 
     static {
-        Class cl = Wolf.class;
+        Class<Wolf> cl = Wolf.class;
         emoji = Animal.getEmoji(cl); //!!!
         typeName = Animal.getTypeName(cl); //!!!
         bioTypeCode = Animal.getBioTypeCode(cl);

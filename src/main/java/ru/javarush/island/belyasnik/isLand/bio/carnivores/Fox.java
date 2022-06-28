@@ -16,7 +16,7 @@ public class Fox extends Animal {
 
 
     static {
-        Class cl = Fox.class;
+        Class<Fox> cl = Fox.class;
         emoji = Animal.getEmoji(cl); //!!!
         typeName = Animal.getTypeName(cl); //!!!
         bioTypeCode = Animal.getBioTypeCode(cl);

@@ -17,7 +17,7 @@ public class Bear extends Animal {
 
 
     static {
-        Class cl = Bear.class;
+        Class<Bear> cl = Bear.class;
         emoji = Animal.getEmoji(cl); //!!!
         typeName = Animal.getTypeName(cl); //!!!
         bioTypeCode = Animal.getBioTypeCode(cl);

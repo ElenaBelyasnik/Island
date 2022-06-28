@@ -4,7 +4,7 @@ package ru.javarush.island.belyasnik.isLand.abstract_;
 import ru.javarush.island.belyasnik.isLand.annotations.OrganismParam;
 import ru.javarush.island.belyasnik.isLand.util.Randomizer;
 
-@OrganismParam(typeName = "Oрганизм", emoji = "", bioTypeCode = 0, weight = 0, maxNumberInCell = 0, speed = 0, kgFood = 0)
+@OrganismParam(weight = 0, maxNumberInCell = 0, speed = 0, kgFood = 0)
 public abstract class Organism {
     public int row;
     public int col;
@@ -17,23 +17,13 @@ public abstract class Organism {
     public boolean hungry = false;  // признак того, что организм голодает
     public boolean ate = false;     // признак того, что организм выполнил процесс еды
     public final int male = Randomizer.get(0, 2); // признак мужского пола (1 - М, 0 - Ж)
-    boolean newBorn = false; // признак новорождённого
+    boolean newBorn; // признак новорождённого
 
     public Organism(int row, int col, boolean newBorn) {
         this.row = row;
         this.col = col;
         this.newBorn = newBorn;
     }
-
-/*
-    public Organism(int row, int col, double weight, double kgFood) {
-        this.row = row;
-        this.col = col;
-        this.weight = weight;
-        this.kgFood = kgFood;
-    }
-*/
-
 
     public boolean isNewBorn() {
         return newBorn;
@@ -47,6 +37,54 @@ public abstract class Organism {
     public int getMale() {
         return male;
     }
+
+    // Вернуть изображение emoji для биологического вида
+    public static String getEmoji(Class<? extends Organism> cl) {
+        if (cl.isAnnotationPresent(OrganismParam.class)) {
+            OrganismParam organismParameters = cl.getAnnotation(OrganismParam.class);
+            return organismParameters.emoji();
+        }
+        return "";
+    }
+
+    // Вернуть наименование биологического вида
+    public static String getTypeName(Class<? extends Organism> cl) {
+        if (cl.isAnnotationPresent(OrganismParam.class)) {
+            OrganismParam organismParameters = cl.getAnnotation(OrganismParam.class);
+            return organismParameters.typeName();
+        }
+        return "";
+    }
+
+
+    // Вернуть код биологического вида
+    public static int getBioTypeCode(Class<? extends Organism> cl) {
+        if (cl.isAnnotationPresent(OrganismParam.class)) {
+            OrganismParam organismParameters = cl.getAnnotation(OrganismParam.class);
+            return organismParameters.bioTypeCode();
+        }
+        return 0;
+    }
+
+
+    // Вернуть максимальное количество животных этого вида на одной клетке
+    public static int getMaxNumberInCell(Class<? extends Organism> cl) {
+        if (cl.isAnnotationPresent(OrganismParam.class)) {
+            OrganismParam organismParameters = cl.getAnnotation(OrganismParam.class);
+            return organismParameters.maxNumberInCell();
+        }
+        return 0;
+    }
+
+    // Вернуть скорость перемещения, не более чем, клеток за ход
+    public static int getSpeed(Class<? extends Organism> cl) {
+        if (cl.isAnnotationPresent(OrganismParam.class)) {
+            OrganismParam organismParameters = cl.getAnnotation(OrganismParam.class);
+            return organismParameters.speed();
+        }
+        return 0;
+    }
+
 
     public int getRow() {
         return row;
@@ -102,10 +140,6 @@ public abstract class Organism {
 
     public void setDead(boolean dead) {
         this.dead = dead;
-    }
-
-    public double getFullnessLevel() {
-        return fullnessLevel;
     }
 
     public void setFullnessLevel(double fullnessLevel) {

@@ -5,7 +5,7 @@ import ru.javarush.island.belyasnik.isLand.abstract_.Animal;
 import ru.javarush.island.belyasnik.isLand.annotations.OrganismParam;
 import ru.javarush.island.belyasnik.isLand.enums.IslandParam;
 
-@OrganismParam(typeName = "Орёл", emoji = "\uD83E\uDD85", bioTypeCode = 15, weight = 6, maxNumberInCell = 20, speed = 3, kgFood = 1)
+@OrganismParam(typeName = "Орёл", emoji = "\uD83E\uDD85", bioTypeCode = 15, weight = 6, maxNumberInCell = 20, speed = 3)
 public class Eagle extends Animal {
     public static final String emoji; //!!!
     public static final String typeName; //!!!
@@ -17,7 +17,7 @@ public class Eagle extends Animal {
 
 
     static {
-        Class cl = Eagle.class;
+        Class<Eagle> cl = Eagle.class;
         emoji = Animal.getEmoji(cl); //!!!
         typeName = Animal.getTypeName(cl); //!!!
         bioTypeCode = Animal.getBioTypeCode(cl);
