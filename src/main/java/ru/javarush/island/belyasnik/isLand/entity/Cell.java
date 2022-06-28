@@ -1,5 +1,6 @@
 package ru.javarush.island.belyasnik.isLand.entity;
 
+import ru.javarush.island.belyasnik.isLand.abstract_.Organism;
 import ru.javarush.island.belyasnik.isLand.enums.IslandParam;
 
 import java.lang.reflect.InvocationTargetException;
@@ -10,13 +11,13 @@ import java.util.concurrent.locks.ReentrantLock;
 public class Cell {
     private final int col;
     private final int row;
-    private IslandQueue organisms;
+    private IslandQueue<Organism> organisms;
     private int layerIndex;
     private ArrayList<Cell> cellSteps; // список соседних ячеек для ходьбы
     private final Lock lock = new ReentrantLock(true);
 
 
-    public Cell(int x, int y, IslandQueue organisms, int layerIndex) {
+    public Cell(int x, int y, IslandQueue<Organism> organisms, int layerIndex) {
         this.col = x;
         this.row = y;
         this.organisms = organisms;
@@ -52,7 +53,7 @@ public class Cell {
         return row;
     }
 
-    public IslandQueue getOrganisms() {
+    public IslandQueue<Organism> getOrganisms() {
         return organisms;
     }
 
@@ -64,7 +65,7 @@ public class Cell {
         return this;
     }
 
-    public int createInOneCell(String threadName, String emoji, String typeName) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+    public void createInOneCell(String threadName, String emoji, String typeName) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         Class clazz = IslandParam.classes[this.layerIndex];
         //int amount = Randomizer.get(0, this.getmaxPositionsToAdd());
         int amount = this.getmaxPositionsToAdd();
@@ -77,7 +78,6 @@ public class Cell {
                     emoji + " " + typeName + " - " + amount + " шт.");
         }
 */
-        return amount;
     }
 
     // Посчитать оставшуюся ёмкость очереди ячейки
@@ -90,7 +90,7 @@ public class Cell {
     }
 
     // добавить новый организм сласса clazz  в очередь ячейки
-    public void addNewOrganismInQueue(Class clazz) {
+    public void addNewOrganismInQueue(Class<? extends Organism> clazz) {
         try {
             Class[] params = {int.class, int.class, boolean.class};
             this.organisms.add(clazz.getConstructor(params).newInstance(this.row, this.col, false));

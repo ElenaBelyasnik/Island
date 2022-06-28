@@ -3,7 +3,6 @@ package ru.javarush.island.belyasnik.isLand.exception;
 public class IslandException extends RuntimeException {
     public IslandException() {
     }
-
     public IslandException(String message) {
         super(message);
     }

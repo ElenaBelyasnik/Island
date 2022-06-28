@@ -3,13 +3,14 @@ package ru.javarush.island.belyasnik.isLand.servises;
 
 import ru.javarush.island.belyasnik.isLand.bio.herbivores.Plant;
 import ru.javarush.island.belyasnik.isLand.entity.Cell;
+import ru.javarush.island.belyasnik.isLand.interfaces.PlantAction;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.atomic.AtomicInteger;
 
-//* нить, выполняющая рост растений
-public class PlantWorker implements Runnable {
-    private Cell cell;
+//* нить, которая выращивает растения
+public class PlantWorker implements Runnable, PlantAction {
+    private final Cell cell;
     private static final String emoji = Plant.emoji;
     private static final String typeName = Plant.typeName;
     private final String threadName;
@@ -23,11 +24,15 @@ public class PlantWorker implements Runnable {
     // ежедневное создание растений
     //@Override
     public void run() {
-        int total;
-        Object monitor = this.cell.getMonitor();
-        synchronized (monitor) {
+        grow();
+    }
+
+
+    @Override
+    public void grow() {
+        synchronized (this.cell.getMonitor()) {
             try {
-                total = this.cell.createInOneCell(this.threadName, emoji, typeName);
+                this.cell.createInOneCell(this.threadName, emoji, typeName);
             } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
                 e.printStackTrace();
             }

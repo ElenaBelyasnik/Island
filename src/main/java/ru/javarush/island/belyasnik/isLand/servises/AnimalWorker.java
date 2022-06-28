@@ -1,6 +1,5 @@
 package ru.javarush.island.belyasnik.isLand.servises;
 
-import ru.javarush.island.belyasnik.isLand.abstract_.Animal;
 import ru.javarush.island.belyasnik.isLand.abstract_.Organism;
 import ru.javarush.island.belyasnik.isLand.entity.Cell;
 import ru.javarush.island.belyasnik.isLand.entity.IslandMap;
@@ -16,13 +15,13 @@ import java.util.Deque;
 public class AnimalWorker implements Runnable, AnimalActions {
     private final IslandMap islandMap;
     private Cell cell;
-    private final Animal animal;
+    private final Organism organism;
     private final int bioType; // код биологического вида и номер слоя карты
 
-    public AnimalWorker(IslandMap islandMap, Cell cell, Animal animal) {
+    public AnimalWorker(IslandMap islandMap, Cell cell, Organism organism) {
         this.islandMap = islandMap;
         this.cell = cell;
-        this.animal = animal;
+        this.organism = organism;
         this.bioType = this.cell.getLayerIndex();
     }
 
@@ -37,7 +36,7 @@ public class AnimalWorker implements Runnable, AnimalActions {
             return; // умерло, так умерло...
         }
         // размножение
-        if (this.canReproduce(animal.getMale())) {
+        if (this.canReproduce(organism.getMale())) {
             try {
                 this.reproduce(); // если может размножиться, то размножается
             } catch (Exception e) {
@@ -54,18 +53,18 @@ public class AnimalWorker implements Runnable, AnimalActions {
     public boolean die() {
         // если после еды уровень сытости животного = 0, то животное умирает
         boolean successfulRemoval;
-        if (this.animal.isAte() & this.animal.fullnessLevel == 0.0d) {
-            successfulRemoval = removeFromQueue(this.animal, this.cell);
+        if (this.organism.isAte() & this.organism.fullnessLevel == 0.0d) {
+            successfulRemoval = removeFromQueue(this.organism, this.cell);
         } else return false;
         return successfulRemoval;
     }
 
 
     // удаление организма из очереди
-    public boolean removeFromQueue(Animal animal, Cell cell) {
+    public boolean removeFromQueue(Organism organism, Cell cell) {
         boolean successfulRemoval;
         synchronized (cell.getOrganisms().getMonitor()) {
-            successfulRemoval = cell.getOrganisms().getDeque().remove(animal);
+            successfulRemoval = cell.getOrganisms().getDeque().remove(organism);
         }
         return successfulRemoval;
     }
@@ -75,12 +74,12 @@ public class AnimalWorker implements Runnable, AnimalActions {
         // если пол женский male = 0, то
         if (male == 0) {
             // если животное поело досыта, не умерло, и не голодает, то оно может размножиться
-            if (!this.animal.isDead() & this.animal.isAte() & !this.animal.isHungry()) {
-                Deque<Organism> deque = (Deque<Organism>) this.cell.getOrganisms().getDeque();
+            if (!this.organism.isDead() & this.organism.isAte() & !this.organism.isHungry()) {
+                Deque<Organism> deque = this.cell.getOrganisms().getDeque();
                 // проверяем, а есть ли в очереди ячейки хоть 1 самец этого вида
                 return deque
                         .stream()
-                        .map((ru.javarush.island.belyasnik.isLand.abstract_.Organism::getMale))
+                        .map(Organism::getMale)
                         .anyMatch(m -> (m == 1));
             }
         }
@@ -90,7 +89,7 @@ public class AnimalWorker implements Runnable, AnimalActions {
     public void reproduce() {
         // если животное поело досыта, не умерло, и не голодает, то оно может размножиться
         synchronized (this.cell.getOrganisms().getMonitor()) {
-            Class<? extends Animal> clazz = this.animal.getClass();
+            Class<? extends Organism> clazz = this.organism.getClass();
             int col = this.cell.getCol();
             int row = this.cell.getRow();
             for (int n = 0; n < IslandParam.HOW_MANY_CHILDREN[this.bioType]; n++) {
@@ -141,7 +140,7 @@ public class AnimalWorker implements Runnable, AnimalActions {
         for (int step = 0; step < size; step++) {
             int direction = Randomizer.get(0, size);
             cell = arrayList.get(direction);
-            transfer = transferToAnotherQueue(this.animal, cell);
+            transfer = transferToAnotherQueue(this.organism, cell);
             if (transfer) {
                 nextCell = cell;
                 break;
@@ -151,7 +150,7 @@ public class AnimalWorker implements Runnable, AnimalActions {
     }
 
     // перемещение организма в очередь другой ячейки
-    public boolean transferToAnotherQueue(Animal animal, Cell cell) {
+    public boolean transferToAnotherQueue(Organism organism, Cell cell) {
         boolean successfulAdding = false;
         boolean successfulRemoval = false;
         synchronized (cell.getMonitor()) {
@@ -160,9 +159,9 @@ public class AnimalWorker implements Runnable, AnimalActions {
             if (canTransfer) {
                 successfulAdding = cell.getOrganisms()
                         .getDeque()
-                        .offerLast(animal);
+                        .offerLast(organism);
                 if (successfulAdding) {
-                    successfulRemoval = removeFromQueue(animal, cell);
+                    successfulRemoval = removeFromQueue(organism, cell);
                 }
             }
         }
@@ -173,7 +172,7 @@ public class AnimalWorker implements Runnable, AnimalActions {
     @Override
     public void eat() {
         // если животное ещё не ело и оно живо, то оно должно есть
-        if (!(this.animal.isAte() & this.animal.isDead())) {
+        if (!(this.organism.isAte() & this.organism.isDead())) {
             // eat1(); // процесс еды по первому алгоритму
             eat2(); // процесс еды по второму алгоритму
         }
@@ -192,19 +191,19 @@ public class AnimalWorker implements Runnable, AnimalActions {
             // получить ячейку с очередью организмов из рациона по коду био-вида
             Cell foodCell = this.getFoodCell(vid);
             // получить очередь поедаемых организмов
-            IslandQueue foodIslandQueue = foodCell.getOrganisms();
+            IslandQueue<Organism> foodIslandQueue = foodCell.getOrganisms();
             //Последовательно перебираем очередь "поедаемых", если она не пуста
             // выполнять, пока показатель сытости не станет равным эталону
-            while (this.animal.fullnessLevel < this.animal.kgFood && foodIslandQueue.getSize() > 0) {
+            while (this.organism.fullnessLevel < this.organism.kgFood && foodIslandQueue.getSize() > 0) {
                 if (Randomizer.get(1, 100) < probability) {
                     // Извлекает и удаляет голову очереди, представленной этой двухсторонней очередью
                     // (другими словами, первый элемент этой двухсторонней очереди),
                     // или возвращает значение, null если эта двухсторонняя очередь пуста.
-                    Organism foodOrganism = (Organism) foodIslandQueue.pool();
+                    Organism foodOrganism = foodIslandQueue.pool();
                     if (foodOrganism != null) {
                         // процесс поедания добавляет к уровню сытости вес поедаемого организма
-                        double eatingWeight = countNeedToEat(foodOrganism.getWeight(), this.animal.fullnessLevel, this.animal.kgFood);
-                        this.animal.setFullnessLevel(this.animal.fullnessLevel + eatingWeight);
+                        double eatingWeight = countNeedToEat(foodOrganism.getWeight(), this.organism.fullnessLevel, this.organism.kgFood);
+                        this.organism.setFullnessLevel(this.organism.fullnessLevel + eatingWeight);
                         foodOrganism.setDead(true);
                         //System.out.println(this.animal.toString() + " съел " + foodOrganism.toString() + " уровень сытости = " + this.animal.fullnessLevel);
                     }
@@ -212,15 +211,15 @@ public class AnimalWorker implements Runnable, AnimalActions {
             }
         }
         // расставим статусы сытости
-        setEatenStatus(this.animal);
+        setEatenStatus(this.organism);
     }
 
     // расстановка статусов "сытости"
-    public void setEatenStatus(Animal animal) {
-        synchronized (this.animal.getMonitor()) {
-            animal.setAte(true); // признак того, что животное обработано процессом "eat"
-            if (animal.fullnessLevel > 0.0d & animal.fullnessLevel < animal.kgFood) {
-                animal.setHungry(true); // если животному не удалось насытиться, то оно голодно
+    public void setEatenStatus(Organism organism) {
+        synchronized (this.organism.getMonitor()) {
+            organism.setAte(true); // признак того, что животное обработано процессом "eat"
+            if (organism.fullnessLevel > 0.0d & organism.fullnessLevel < organism.kgFood) {
+                organism.setHungry(true); // если животному не удалось насытиться, то оно голодно
             }
         }
     }
