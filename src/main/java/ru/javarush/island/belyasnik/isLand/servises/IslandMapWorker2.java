@@ -75,7 +75,7 @@ public class IslandMapWorker2 extends Thread {
                                 Animal animal = iterator.next(); // получить очередной организм
                                 // новорождённых не обрабатываем в этом такте
                                 if (!animal.isNewBorn()) {
-                                    AnimalWorker animalWorker = new AnimalWorker(islandMap, cell, animal, iterator);
+                                    AnimalWorker animalWorker = new AnimalWorker(islandMap, cell, animal);
                                     animalExecutor.submit(animalWorker);
                                 }
                             } else break;

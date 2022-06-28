@@ -55,7 +55,7 @@ public abstract class IslandParam {
             20    // 15, EAGLE
     };
 
-    // Максимальное количество животных этого вида в одной ячейке карты
+    // Собственный вес животных
     public static double[] WEIGHT = new double[]{
             1,  // 0, PLANT
             400,   // 1, HORSE
@@ -136,7 +136,7 @@ public abstract class IslandParam {
             {{3, 90}, {4, 90}, {9, 80}, {13, 10}}    // 15, EAGLE
     };
 
-    // Максимальное количество животных этого вида в одной ячейке карты
+    // Максимальное количество детёнышей для каждого вида животных
     public static int[] HOW_MANY_CHILDREN = new int[]{
             0,  // 0, PLANT
             1,   // 1, HORSE
@@ -156,5 +156,24 @@ public abstract class IslandParam {
             3    // 15, EAGLE
     };
 
+    // Максимальное количество детёнышей для каждого вида животных
+    public static int[] HOW_MANY_STEPS = new int[]{
+            0,  // 0, PLANT
+            4,   // 1, HORSE
+            4,   // 2, DEER
+            2,  // 3, RABBIT
+            1,  // 4, MOUSE
+            3,  // 5, GOAT
+            3,  // 6, SHEEP
+            2,   // 7, BOAR
+            3,   // 8, BUFFALO
+            4,  // 9, DUCK
+            0, // 10, CATERPILLAR
+            3,   // 11, WOLF
+            1,   // 12, BOA
+            2,   // 13, FOX
+            2,    // 14, BEAR
+            3    // 15, EAGLE
+    };
 
 }

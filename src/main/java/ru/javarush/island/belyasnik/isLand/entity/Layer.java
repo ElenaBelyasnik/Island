@@ -3,13 +3,15 @@ package ru.javarush.island.belyasnik.isLand.entity;
 
 import ru.javarush.island.belyasnik.isLand.enums.IslandParam;
 
+import java.util.ArrayList;
+
 public class Layer {
-    private int bioTypeCode; // биологический вид, соответствующий этому слою карты
+    private final int bioTypeCode; // биологический вид, соответствующий этому слою карты
     // слой ячеек карты
     private Cell[][] cells = new Cell[IslandParam.NUMBER_OF_COLUMNS][IslandParam.NUMBER_OF_ROWS];
 
     // массив статистики по каждой ячейке слоя
-    private int[][] cellStat = new int[IslandParam.NUMBER_OF_COLUMNS][IslandParam.NUMBER_OF_ROWS];
+    private final int[][] cellStat = new int[IslandParam.NUMBER_OF_COLUMNS][IslandParam.NUMBER_OF_ROWS];
 
     public Layer(int bioTypeCode, Cell[][] cells) {
         this.bioTypeCode = bioTypeCode;
@@ -21,13 +23,17 @@ public class Layer {
         return cells;
     }
 
+/*
     public Cell getCell(int row, int col) {
         return cells[row][col];
     }
+*/
 
+/*
     public void setCells(Cell[][] cells) {
         this.cells = cells;
     }
+*/
 
 
     // сбор статистики по всем ячейкам слоя
@@ -50,7 +56,7 @@ public class Layer {
     }
 
     // инициализация списка соседних ячеек, для каждой ячейки
-    public void getCellStapsList() {
+    public void getCellStepsList() {
         Cell[][] cells = this.getCells();
         int maxCol = cells.length;
         int minCol = 0;
@@ -60,25 +66,25 @@ public class Layer {
 
         for (int col = 0; col < cells.length; col++) {
             for (int row = 0; row < cells[col].length; row++) {
-                IslandQueue<Cell> deque = new IslandQueue<>(4);
+                ArrayList<Cell> stepList = new ArrayList<>();
 
-                if ((col + 1) < cells.length) {
+                if ((col + 1) < maxCol) {
                     cell1 = cells[col + 1][row];
-                    deque.add(cell1);
+                    stepList.add(cell1);
                 }
-                if ((row - 1) >= 0) {
+                if ((row - 1) >= minRow) {
                     cell2 = cells[col][row - 1];
-                    deque.add(cell2);
+                    stepList.add(cell2);
                 }
-                if ((col - 1) >= 0) {
+                if ((col - 1) >= minCol) {
                     cell3 = cells[col - 1][row];
-                    deque.add(cell3);
+                    stepList.add(cell3);
                 }
-                if ((row + 1) < cells[col].length) {
+                if ((row + 1) < maxRow) {
                     cell4 = cells[col][row + 1];
-                    deque.add(cell4);
+                    stepList.add(cell4);
                 }
-                this.getCells()[col][row].setCellSteps(deque);
+                this.getCells()[col][row].setCellSteps(stepList);
             }
         }
     }

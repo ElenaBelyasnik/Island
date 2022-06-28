@@ -3,6 +3,7 @@ package ru.javarush.island.belyasnik.isLand.entity;
 import ru.javarush.island.belyasnik.isLand.enums.IslandParam;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -11,7 +12,7 @@ public class Cell {
     private final int row;
     private IslandQueue organisms;
     private int layerIndex;
-    private IslandQueue<Cell> cellSteps; // список соседних ячеек для ходьбы
+    private ArrayList<Cell> cellSteps; // список соседних ячеек для ходьбы
     private final Lock lock = new ReentrantLock(true);
 
 
@@ -20,14 +21,13 @@ public class Cell {
         this.row = y;
         this.organisms = organisms;
         this.layerIndex = layerIndex;
-
     }
 
-    public IslandQueue<Cell> getCellSteps() {
+    public ArrayList<Cell> getCellSteps() {
         return cellSteps;
     }
 
-    public void setCellSteps(IslandQueue<Cell> cellSteps) {
+    public void setCellSteps(ArrayList<Cell> cellSteps) {
         this.cellSteps = cellSteps;
     }
 

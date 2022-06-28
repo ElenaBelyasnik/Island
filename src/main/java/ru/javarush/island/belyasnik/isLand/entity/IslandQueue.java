@@ -9,6 +9,10 @@ public class IslandQueue<T> {
     private int capacity; // максимальная ёмкость очереди
     private LinkedBlockingDeque<T> deque;
 
+    public Object getMonitor() {
+        return this;
+    }
+
     public IslandQueue(int capacity) {
         this.capacity = capacity;
         this.deque = new LinkedBlockingDeque<>(capacity);
@@ -44,9 +48,21 @@ public class IslandQueue<T> {
         //System.out.println(organism.hashCode());
     }
 
+    public boolean offerLast(T item) {
+        return deque.offerLast(item);
+        //System.out.println(organism.hashCode());
+    }
+
 
     public T pool() {
         return deque.pollFirst();
+    }
+
+    @Override
+    public String toString() {
+        return "IslandQueue{" +
+                "deque=" + deque +
+                '}';
     }
 
     public boolean pool(T item) {

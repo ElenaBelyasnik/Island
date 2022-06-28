@@ -26,7 +26,7 @@ public class IslandMap {
         for (int bioTypeIndex = 0; bioTypeIndex < layers.length; bioTypeIndex++) {
             layers[bioTypeIndex] = IslandMap.init(IslandParam.classes[bioTypeIndex], bioTypeIndex);
             // инициализация списка соседних ячеек, для каждой ячейки
-            layers[bioTypeIndex].getCellStapsList();
+            layers[bioTypeIndex].getCellStepsList();
         }
         return layers;
     }
