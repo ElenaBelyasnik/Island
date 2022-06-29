@@ -90,5 +90,8 @@ public class IslandMapWorker2 extends Thread {
         //Собрать и вывести статистику по карте
         this.dispatcher.finishedOneElseAction();
         this.islandMap.printStat(this.dispatcher);
+        this.islandMap.draw();
+
+
     }
 }

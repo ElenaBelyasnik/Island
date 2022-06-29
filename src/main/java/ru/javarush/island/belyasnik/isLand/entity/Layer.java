@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class Layer {
     private final int bioTypeCode; // биологический вид, соответствующий этому слою карты
     // слой ячеек карты
-    private Cell[][] cells = new Cell[IslandParam.NUMBER_OF_COLUMNS][IslandParam.NUMBER_OF_ROWS];
+    private final Cell[][] cells;
 
     // массив статистики по каждой ячейке слоя
     private final int[][] cellStat = new int[IslandParam.NUMBER_OF_COLUMNS][IslandParam.NUMBER_OF_ROWS];
@@ -18,40 +18,35 @@ public class Layer {
         this.cells = cells;
     }
 
+    public int getBioTypeCode() {
+        return bioTypeCode;
+    }
+
+    public int[][] getCellStat() {
+        return cellStat;
+    }
 
     public Cell[][] getCells() {
         return cells;
     }
 
-/*
-    public Cell getCell(int row, int col) {
-        return cells[row][col];
-    }
-*/
 
-/*
-    public void setCells(Cell[][] cells) {
-        this.cells = cells;
-    }
-*/
-
-
-    // сбор статистики по всем ячейкам слоя
-    public int getLayerStat() {
+    // сбор статистики по всем ячейкам слоя (био-вида)
+    // сбор статистики по каждому слою (био-виду) целиком
+    public int getLayerStat(IslandMap islandMap) {
         Cell[][] cells = this.getCells();
         int count = 0;
-        for (int row = 0; row < cells.length; row++) {
-            for (int col = 0; col < cells[row].length; col++) {
-
-                cellStat[row][col] = this.getCellStat(cells[row][col]);
-                count += this.getCellStat(cells[row][col]);
+        for (int col = 0; col < cells.length; col++) {
+            for (int row = 0; row < cells[col].length; row++) {
+                cellStat[col][row] = this.getOneCellStat(cells[col][row]);
+                count += this.getOneCellStat(cells[col][row]);
             }
         }
         return count;
     }
 
     // сбор статистики по одной ячейке слоя
-    public int getCellStat(Cell cell) {
+    public int getOneCellStat(Cell cell) {
         return cell.getOrganisms().getSize();
     }
 

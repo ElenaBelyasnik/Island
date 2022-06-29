@@ -8,7 +8,11 @@ import java.util.Iterator;
 
 public class IslandMap {
     private final Layer[] layers;
+    // layersStat[bioType] - сколько всего животных данного вида ()
     private final int[] layersStat = new int[IslandParam.BIO_TYPES_TOTAL];
+    // массивы для рисования карты с итогом очередного такта
+    private int[][] drawingCount = new int[IslandParam.NUMBER_OF_COLUMNS][IslandParam.NUMBER_OF_ROWS];
+    private String[][] drawingEmoji = new String[IslandParam.NUMBER_OF_COLUMNS][IslandParam.NUMBER_OF_ROWS];
 
     public IslandMap(Layer[] layers) {
         this.layers = layers;
@@ -16,6 +20,22 @@ public class IslandMap {
 
     public Layer[] getLayers() {
         return this.layers;
+    }
+
+    public int[][] getDrawingCount() {
+        return drawingCount;
+    }
+
+    public void setDrawingCount(int[][] drawingCount) {
+        this.drawingCount = drawingCount;
+    }
+
+    public String[][] getDrawingEmoji() {
+        return drawingEmoji;
+    }
+
+    public void setDrawingEmoji(String[][] drawingEmoji) {
+        this.drawingEmoji = drawingEmoji;
     }
 
     // Проходим по всем слоям и заполняем их организмами
@@ -73,10 +93,9 @@ public class IslandMap {
 
     // сбор статистики по всей карте
     public void getStat() {
-        //int[] layersStat = new int[this.layersStat.length];
         for (int bioType = 0; bioType < layersStat.length; bioType++) {
             Layer layer = this.layers[bioType];
-            layersStat[bioType] = layer.getLayerStat();
+            layersStat[bioType] = layer.getLayerStat(this);
         }
     }
 
@@ -121,6 +140,62 @@ public class IslandMap {
             }
         }
     }
+
+    //**TODO создать матрицу по размеру карты, каждая ячейка которой содержит:
+    // - код самого многочисленного вида животных в этой ячейке
+    // - если животных нет, то показывать растения
+    // - число особей каждого вида в ячейке
+    public void keepStatForDrawing() throws NoSuchFieldException, IllegalAccessException {
+        int[][] drawingCount = this.getDrawingCount();
+        String[][] drawingEmoji = this.getDrawingEmoji();
+        Layer[] layers = this.getLayers();
+
+        for (int col = 0; col < drawingCount.length; col++) {
+            for (int row = 0; row < drawingCount[col].length; row++) {
+                drawingCount[col][row] = 0;
+                drawingEmoji[col][row] = "";
+
+            }
+        }
+
+        for (int col = 0; col < drawingCount.length; col++) {
+            for (int row = 0; row < drawingCount[col].length; row++) {
+                for (int l = 1; l < layers.length; l++) {
+                    int bioType = layers[l].getBioTypeCode();
+                    Class<?> clazz = IslandParam.classes[bioType];
+                    String emoji = (String) getFieldValue(clazz, "emoji");
+                    int[][] cellStat = layers[l].getCellStat();
+                    if (drawingCount[col][row] < cellStat[col][row]) {
+                        drawingCount[col][row] = cellStat[col][row];
+                        drawingEmoji[col][row] = emoji;
+
+                    }
+                    if (drawingCount[col][row] == 0) {
+                        drawingEmoji[col][row] = (String) getFieldValue(IslandParam.classes[0], "emoji");
+                    }
+                }
+            }
+        }
+        this.setDrawingCount(drawingCount);
+        this.setDrawingEmoji(drawingEmoji);
+    }
+
+    public void draw() throws NoSuchFieldException, IllegalAccessException {
+        this.keepStatForDrawing();
+
+        int[][] drawingCount = this.getDrawingCount();
+        String[][] drawingEmoji = this.getDrawingEmoji();
+
+        System.out.println();
+        for (int col = 0; col < drawingCount.length; col++) {
+            for (int row = 0; row < drawingCount[col].length; row++) {
+                System.out.print("[" + drawingEmoji[col][row] + "]");
+            }
+            System.out.println();
+        }
+    }
+
+
 }
 
 

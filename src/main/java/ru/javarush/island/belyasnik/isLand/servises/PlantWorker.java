@@ -32,7 +32,7 @@ public class PlantWorker implements Runnable, PlantAction {
     public void grow() {
         synchronized (this.cell.getMonitor()) {
             try {
-                this.cell.createInOneCell(this.threadName, emoji, typeName);
+                this.cell.createInOneCell();
             } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
                 e.printStackTrace();
             }
