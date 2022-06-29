@@ -31,7 +31,6 @@ public abstract class IslandParam {
             Fox.class, // 13
             Bear.class, // 14
             Eagle.class // 15
-
     };
 
 
@@ -156,7 +155,7 @@ public abstract class IslandParam {
             3    // 15, EAGLE
     };
 
-    // Максимальное количество детёнышей для каждого вида животных
+    // Максимальное количество шагов для каждого вида животных
     public static int[] HOW_MANY_STEPS = new int[]{
             0,  // 0, PLANT
             4,   // 1, HORSE

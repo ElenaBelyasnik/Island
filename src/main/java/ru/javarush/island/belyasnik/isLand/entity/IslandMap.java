@@ -60,7 +60,7 @@ public class IslandMap {
                 int maxNumberInCell = (int) getFieldValue(clazz, "maxNumberInCell");
                 IslandQueue<Organism> islandQueueOrganism = new IslandQueue<>(maxNumberInCell);
                 // заполнить очередь организмами в количестве maxNumberInCell/5
-                for (int n = 0; n < maxNumberInCell / 5; n++) {
+                for (int n = 0; n < maxNumberInCell / 4; n++) {
                     // добавить организм в очередь ячейки
                     islandQueueOrganism.addNewOrganismInQueue(clazz, col, row, false);
                     //queueOrganism.add(clazz.getConstructor(params).newInstance(col, row, false));
