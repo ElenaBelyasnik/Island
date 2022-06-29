@@ -93,7 +93,6 @@ public class IslandMap {
     }
 
     public <T> String getStatMess(Class<T> clazz, int counter) throws NoSuchFieldException, IllegalAccessException {
-        //String emoji = (String) clazz.getDeclaredField("emoji").get(null);
         String emoji = (String) getFieldValue(clazz, "emoji");
         String typeName = (String) clazz.getDeclaredField("typeName").get(null);
         return emoji + " " + typeName + " - " + counter;
@@ -105,8 +104,8 @@ public class IslandMap {
 
         for (Layer layer : layers) {
             Cell[][] cells = layer.getCells();
-            for (Cell[] value : cells) {
-                for (Cell cell : value) {
+            for (Cell[] value : cells) { // строки
+                for (Cell cell : value) { // столбцы
                     IslandQueue<Organism> islandQueueOrganism = cell.getOrganisms();
                     //Последовательно перебираем все организмы
                     Iterator<Organism> iterator = islandQueueOrganism.getDeque().descendingIterator();
@@ -115,8 +114,8 @@ public class IslandMap {
                         organism.setDead(false); // живой
                         organism.setAte(false); // ещё не ел в этом такте
                         organism.setHungry(false); // ещё не голоден
-                        organism.setFullnessLevel(0.0d); // ничего не съел
                         organism.setNewBorn(false); // не новорождённый
+                        organism.setFullnessLevel(0.0d); // ничего не съел
                     }
                 }
             }
