@@ -36,14 +36,7 @@ public class AnimalWorker implements Runnable, AnimalActions {
             return; // умерло, так умерло...
         }
         // размножение
-        if (this.canReproduce(organism.getMale())) {
-            try {
-                this.reproduce(); // если может размножиться, то размножается
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new RuntimeException();
-            }
-        }
+        this.reproduce(); // если может размножиться, то размножается
         // движение
         this.move();
     }
@@ -86,29 +79,37 @@ public class AnimalWorker implements Runnable, AnimalActions {
         return false;
     }
 
+    // если может размножиться, то размножается
     public void reproduce() {
-        // если животное поело досыта, не умерло, и не голодает, то оно может размножиться
-        synchronized (this.cell.getOrganisms().getMonitor()) {
-            Class<? extends Organism> clazz = this.organism.getClass();
-            int col = this.cell.getCol();
-            int row = this.cell.getRow();
-            for (int n = 0; n < IslandParam.HOW_MANY_CHILDREN[this.bioType]; n++) {
-                try {
-                    int capacity = this.cell.getOrganisms().getCapacity();
-                    int size = this.cell.getOrganisms().getSize();
-                    if (capacity > size) {
-                        // добавить организм в очередь ячейки
-                        this.cell.getOrganisms().addNewOrganismInQueue(clazz, col, row, true);
-                    }
-                } catch (Exception ignored) {
+        if (this.canReproduce(organism.getMale())) {
+            try {
 
+                // если животное поело досыта, не умерло, и не голодает, то оно может размножиться
+                synchronized (this.cell.getOrganisms().getMonitor()) {
+                    Class<? extends Organism> clazz = this.organism.getClass();
+                    int col = this.cell.getCol();
+                    int row = this.cell.getRow();
+                    for (int n = 0; n < IslandParam.HOW_MANY_CHILDREN[this.bioType]; n++) {
+                        try {
+                            int capacity = this.cell.getOrganisms().getCapacity();
+                            int size = this.cell.getOrganisms().getSize();
+                            if (capacity > size) {
+                                // добавить организм в очередь ячейки
+                                this.cell.getOrganisms().addNewOrganismInQueue(clazz, col, row, true);
+                            }
+                        } catch (Exception ignored) {
+
+                        }
+                    }
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException();
             }
         }
     }
 
 
-    // TODO Проверить корректно ли двигается животное.
     @Override
     public void move() {
         // получить длину пути, на который переместится животное

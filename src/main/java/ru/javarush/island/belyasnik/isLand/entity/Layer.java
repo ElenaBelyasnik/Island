@@ -11,7 +11,7 @@ public class Layer {
     private final Cell[][] cells;
 
     // массив статистики по каждой ячейке слоя
-    private final int[][] cellStat = new int[IslandParam.NUMBER_OF_COLUMNS][IslandParam.NUMBER_OF_ROWS];
+    private final int[][] cellStat = new int[IslandParam.NUMBER_OF_ROWS][IslandParam.NUMBER_OF_COLUMNS];
 
     public Layer(int bioTypeCode, Cell[][] cells) {
         this.bioTypeCode = bioTypeCode;

@@ -11,8 +11,8 @@ public class IslandMap {
     // layersStat[bioType] - сколько всего животных данного вида ()
     private final int[] layersStat = new int[IslandParam.BIO_TYPES_TOTAL];
     // массивы для рисования карты с итогом очередного такта
-    private int[][] drawingCount = new int[IslandParam.NUMBER_OF_COLUMNS][IslandParam.NUMBER_OF_ROWS];
-    private String[][] drawingEmoji = new String[IslandParam.NUMBER_OF_COLUMNS][IslandParam.NUMBER_OF_ROWS];
+    private int[][] drawingCount = new int[IslandParam.NUMBER_OF_ROWS][IslandParam.NUMBER_OF_COLUMNS];
+    private String[][] drawingEmoji = new String[IslandParam.NUMBER_OF_ROWS][IslandParam.NUMBER_OF_COLUMNS];
 
     public IslandMap(Layer[] layers) {
         this.layers = layers;
@@ -53,23 +53,23 @@ public class IslandMap {
     // инициализация одного слоя карты организмами одного биологического вида
     public static <T> Layer init(Class<T> clazz, int layerIndex) throws NoSuchFieldException, IllegalAccessException {
         // заполняем массив пустых ячеек слоя layer
-        Cell[][] cells = new Cell[IslandParam.NUMBER_OF_COLUMNS][IslandParam.NUMBER_OF_ROWS];
-        for (int col = 0; col < cells.length; col++) {
-            for (int row = 0; row < cells[col].length; row++) {
+        Cell[][] cells = new Cell[IslandParam.NUMBER_OF_ROWS][IslandParam.NUMBER_OF_COLUMNS];
+        for (int row = 0; row < cells.length; row++) {
+            for (int col = 0; col < cells[row].length; col++) {
                 // создать очередь организмов для каждой ячейки
                 int maxNumberInCell = (int) getFieldValue(clazz, "maxNumberInCell");
                 IslandQueue<Organism> islandQueueOrganism = new IslandQueue<>(maxNumberInCell);
                 // заполнить очередь организмами в количестве maxNumberInCell/5
                 for (int n = 0; n < maxNumberInCell / 5; n++) {
                     // добавить организм в очередь ячейки
-                    islandQueueOrganism.addNewOrganismInQueue(clazz, col, row, false);
-                    //queueOrganism.add(clazz.getConstructor(params).newInstance(col, row, false));
+                    islandQueueOrganism.addNewOrganismInQueue(clazz, row, col, false);
+                    //queueOrganism.add(clazz.getConstructor(params).newInstance(row1, row, false));
                 }
                 // создать объект ячейки и присвоить его массиву ячеек слоя,
                 // передав туда координаты, очередь организмов и индекс слоя
-                Cell cell = new Cell(col, row, islandQueueOrganism, layerIndex);
+                Cell cell = new Cell(row, col, islandQueueOrganism, layerIndex);
 
-                cells[col][row] = cell;
+                cells[row][col] = cell;
             }
         }
         int counter = (int) clazz.getDeclaredField("counter").get(null);
@@ -102,7 +102,7 @@ public class IslandMap {
     // вывести статистику по оставшимся биологическим видам
     public void printStat(Dispatcher dispatcher) throws NoSuchFieldException, IllegalAccessException {
         System.out.println();
-        System.out.println("Завершение " + dispatcher.getCountTacts() + " такта эмуляции, статистика: ");
+        System.out.println("Завершение " + dispatcher.getCountTact() + " такта эмуляции, статистика: ");
         getStat();
         for (int bioTypeCode = 0; bioTypeCode < layersStat.length; bioTypeCode++) {
             if (layersStat[bioTypeCode] > 0) {
@@ -121,8 +121,10 @@ public class IslandMap {
     public void resetStatus() {
         Layer[] layers = this.getLayers();
 
+        // проходим по каждому слою
         for (Layer layer : layers) {
             Cell[][] cells = layer.getCells();
+            // обходим все ячейки слоя
             for (Cell[] value : cells) { // строки
                 for (Cell cell : value) { // столбцы
                     IslandQueue<Organism> islandQueueOrganism = cell.getOrganisms();
@@ -150,6 +152,7 @@ public class IslandMap {
         String[][] drawingEmoji = this.getDrawingEmoji();
         Layer[] layers = this.getLayers();
 
+        // обнулить массив со счётчиком и массив с emoji
         for (int col = 0; col < drawingCount.length; col++) {
             for (int row = 0; row < drawingCount[col].length; row++) {
                 drawingCount[col][row] = 0;
@@ -158,20 +161,20 @@ public class IslandMap {
             }
         }
 
-        for (int col = 0; col < drawingCount.length; col++) {
-            for (int row = 0; row < drawingCount[col].length; row++) {
+        for (int row = 0; row < drawingCount.length; row++) {
+            for (int col = 0; col < drawingCount[row].length; col++) {
                 for (int l = 1; l < layers.length; l++) {
                     int bioType = layers[l].getBioTypeCode();
                     Class<?> clazz = IslandParam.classes[bioType];
                     String emoji = (String) getFieldValue(clazz, "emoji");
                     int[][] cellStat = layers[l].getCellStat();
-                    if (drawingCount[col][row] < cellStat[col][row]) {
-                        drawingCount[col][row] = cellStat[col][row];
-                        drawingEmoji[col][row] = emoji;
+                    if (drawingCount[row][col] < cellStat[row][col]) {
+                        drawingCount[row][col] = cellStat[row][col];
+                        drawingEmoji[row][col] = emoji;
 
                     }
-                    if (drawingCount[col][row] == 0) {
-                        drawingEmoji[col][row] = (String) getFieldValue(IslandParam.classes[0], "emoji");
+                    if (drawingCount[row][col] == 0) {
+                        drawingEmoji[row][col] = (String) getFieldValue(IslandParam.classes[0], "emoji");
                     }
                 }
             }
@@ -187,9 +190,9 @@ public class IslandMap {
         String[][] drawingEmoji = this.getDrawingEmoji();
 
         System.out.println();
-        for (int col = 0; col < drawingCount.length; col++) {
-            for (int row = 0; row < drawingCount[col].length; row++) {
-                System.out.print("[" + drawingEmoji[col][row] + "]");
+        for (int row = 0; row < drawingCount.length; row++) {
+            for (int col = 0; col < drawingCount[row].length; col++) {
+                System.out.print("[" + drawingEmoji[row][col] + "]");
             }
             System.out.println();
         }

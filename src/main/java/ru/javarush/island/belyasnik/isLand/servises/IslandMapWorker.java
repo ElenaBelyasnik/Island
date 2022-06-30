@@ -10,7 +10,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class IslandMapWorker2 extends Thread {
+public class IslandMapWorker extends Thread {
     private final IslandMap islandMap;
     private final Layer[] layers;
     private final Dispatcher dispatcher;
@@ -18,10 +18,10 @@ public class IslandMapWorker2 extends Thread {
     ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(IslandParam.NUMBER_OF_EXECUTOR_THREADS);
 
 
-    public IslandMapWorker2(IslandMap islandMap) {
+    public IslandMapWorker(IslandMap islandMap) {
         this.islandMap = islandMap;
         this.layers = this.islandMap.getLayers();
-        this.dispatcher = new Dispatcher(16);
+        this.dispatcher = new Dispatcher();
     }
 
     @Override
@@ -86,7 +86,6 @@ public class IslandMapWorker2 extends Thread {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        //Thread.sleep(1000);
         //Собрать и вывести статистику по карте
         this.dispatcher.finishedOneElseAction();
         this.islandMap.printStat(this.dispatcher);
