@@ -23,7 +23,7 @@ public class Eagle extends Animal {
         bioTypeCode = Animal.getBioTypeCode(cl);
         maxNumberInCell = Animal.getMaxNumberInCell(cl);
         speed = Animal.getSpeed(cl);
-        menu = IslandParam.RACION_PARAM[bioTypeCode];
+        menu = IslandParam.RATION_PARAM[bioTypeCode];
     }
 
     public Eagle(int row, int col, boolean newBorn) {

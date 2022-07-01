@@ -10,37 +10,45 @@ import ru.javarush.island.belyasnik.isLand.util.Randomizer;
 
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicInteger;
 
-
-public class AnimalWorker implements Runnable, AnimalActions {
+public class AnimalWorker implements Callable<String>, AnimalActions {
     private final IslandMap islandMap;
     private Cell cell;
     private final Organism organism;
-    private final int bioType; // код биологического вида и номер слоя карты
+    private final String threadName;
+    private static final AtomicInteger POOL_NUMBER = new AtomicInteger(1); // номер группы
+    //public AtomicInteger countThread = new AtomicInteger(0);
 
     public AnimalWorker(IslandMap islandMap, Cell cell, Organism organism) {
         this.islandMap = islandMap;
         this.cell = cell;
         this.organism = organism;
-        this.bioType = this.cell.getLayerIndex();
+        this.threadName = organism.toString() + " "
+                + Thread.currentThread().getThreadGroup().getName()
+                + "-pool-" + POOL_NUMBER.getAndIncrement()
+                + "-"
+                + Thread.currentThread().getName();
     }
+
 
     public void setCell(Cell cell) {
         this.cell = cell;
     }
 
-    @Override
-    public void run() {
-        this.eat();
-        if (this.die()) {
-            return; // умерло, так умерло...
-        }
-        // размножение
-        this.reproduce(); // если может размножиться, то размножается
-        // движение
-        this.move();
-    }
 
+    @Override
+    public String call() {
+        this.eat(); // едим
+        if (this.die()) {
+            return threadName; // умерло, так умерло...
+        }
+        this.reproduce(); // размножаемся
+        this.move(); // движение
+
+        return threadName;
+    }
 
     @Override
     public boolean die() {
@@ -89,7 +97,7 @@ public class AnimalWorker implements Runnable, AnimalActions {
                     Class<? extends Organism> clazz = this.organism.getClass();
                     int col = this.cell.getCol();
                     int row = this.cell.getRow();
-                    for (int n = 0; n < IslandParam.HOW_MANY_CHILDREN[this.bioType]; n++) {
+                    for (int n = 0; n < IslandParam.HOW_MANY_CHILDREN[this.cell.getLayerIndex()]; n++) {
                         try {
                             int capacity = this.cell.getOrganisms().getCapacity();
                             int size = this.cell.getOrganisms().getSize();
@@ -113,7 +121,7 @@ public class AnimalWorker implements Runnable, AnimalActions {
     @Override
     public void move() {
         // получить длину пути, на который переместится животное
-        int pathLength = Randomizer.get(0, IslandParam.HOW_MANY_STEPS[this.bioType + 1]);
+        int pathLength = Randomizer.get(0, IslandParam.HOW_MANY_STEPS[this.cell.getLayerIndex() + 1]);
         Cell currentCell = this.cell;
         // пытаемся ходить, пока не закончился путь
         while (pathLength > 0) {
@@ -184,7 +192,7 @@ public class AnimalWorker implements Runnable, AnimalActions {
     // потом съедаются все вторые по списку, и т.д.
     public void eat2() {
         // Создать массив с рационом для этого класса
-        int[][] rationParam = IslandParam.RACION_PARAM[this.bioType];
+        int[][] rationParam = IslandParam.RATION_PARAM[this.cell.getLayerIndex()];
         // последовательно просматриваем все виды, перечисленные в меню
         for (int[] ints : rationParam) {
             int vid = ints[0]; // код био-вида животного из рациона
@@ -239,64 +247,4 @@ public class AnimalWorker implements Runnable, AnimalActions {
     public Cell getFoodCell(int vid) {
         return this.islandMap.getLayers()[vid].getCells()[this.cell.getCol()][this.cell.getRow()];
     }
-
-
-/*
-    public boolean rationQueueIsEmpty(IslandQueue<Organism>[] foodIslandQueue) {
-        int size = 0;
-        for (IslandQueue<Organism> islandQueue : foodIslandQueue) {
-            size += islandQueue.getSize();
-        }
-        return (size == 0);
-    }
-
-    // по этому алгоритму последовательно съедаются животное вида,
-    // идущего первым в рационе (IslandParam.RATION_PARAM[bioTypeCode])
-    // затем съедается животное вида, идущего 2-м по списку в "рационе" (IslandParam.RATION_PARAM[bioTypeCode]),
-    // и т.д. до достижения уровня насыщения
-    public void eat1() {
-
-        // Создать массив с рационом для этого класса
-        int[][] rationParam = IslandParam.RATION_PARAM[this.bioType];
-        // массив очередей организмов из меню и вероятностей поедания
-        IslandQueue[] foodIslandQueue = new IslandQueue[rationParam.length];
-        // массив вероятностей поедания для организмов из рациона
-        int[] probability = new int[rationParam.length];
-        // заполняем массивы...
-        for (int n = 0; n < rationParam.length; n++) {
-            // получить ячейку с очередью организмов из рациона
-            int vid = rationParam[n][0];
-            Cell foodCell = this.getFoodCell(vid);
-            // получить очередь поедаемых организмов
-            foodIslandQueue[n] = foodCell.getOrganisms();
-            probability[n] = rationParam[n][1]; // вероятность съедания
-        }
-
-        // выполнять, пока показатель сытости меньше предела насыщения и в очередях кто-то есть
-        while (this.animal.fullnessLevel < this.animal.kgFood & !this.rationQueueIsEmpty(foodIslandQueue)) {
-
-            // последовательно просматриваем очереди видов, перечисленныx в меню
-            for (int n = 0; n < foodIslandQueue.length; n++) {
-                synchronized (foodIslandQueue[n]) {
-                    // если очередь не пустая
-                    if (foodIslandQueue[n].getSize() > 0) {
-                        // если выпала соответствующая вероятность,
-                        // то съедаем очередной организм из очереди
-                        if (Randomizer.get(1, 100) < probability[n]) {
-                            Organism foodOrganism = (Organism) foodIslandQueue[n].pool();
-                            synchronized (this.animal.getMonitor()) {
-                                double eatingWeight = countNeedToEat(foodOrganism.weight, this.animal.fullnessLevel, this.animal.kgFood);
-                                this.animal.fullnessLevel += eatingWeight;
-                            }
-                        }
-                    }
-                    // если достигнут показатель сытости
-                    if (!(this.animal.fullnessLevel < this.animal.kgFood)) break;
-                    // если очереди опустели
-                    if (this.rationQueueIsEmpty(foodIslandQueue)) break;
-                }
-            }
-        }
-    }
-*/
 }

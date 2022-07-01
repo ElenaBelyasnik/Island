@@ -8,8 +8,8 @@ import ru.javarush.island.belyasnik.isLand.bio.herbivores.*;
 public abstract class IslandParam {
 
     public static final int BIO_TYPES_TOTAL = BioTypes.values().length; // число биологических видов
-    public static final int NUMBER_OF_COLUMNS = 30; // число ячеек по горизонтали
-    public static final int NUMBER_OF_ROWS = 20; // число ячеек по вертикали
+    public static final int NUMBER_OF_COLUMNS = 10; // число ячеек по горизонтали
+    public static final int NUMBER_OF_ROWS = 10; // число ячеек по вертикали
     public static final int NUMBER_OF_EXECUTOR_THREADS = 4;
     public static final Long TACT = 2000L;
 
@@ -116,7 +116,7 @@ public abstract class IslandParam {
     };
 
     // Параметры питания: {съедаемый вид, вероятность}
-    public static int[][][] RACION_PARAM = new int[][][]{
+    public static int[][][] RATION_PARAM = new int[][][]{
             {{0, 0}},    // 0, PLANT
             {{0, 100}},  // 1, HORSE
             {{0, 100}},  // 2, DEER

@@ -22,7 +22,7 @@ public class Fox extends Animal {
         bioTypeCode = Animal.getBioTypeCode(cl);
         maxNumberInCell = Animal.getMaxNumberInCell(cl);
         speed = Animal.getSpeed(cl);
-        menu = IslandParam.RACION_PARAM[bioTypeCode];
+        menu = IslandParam.RATION_PARAM[bioTypeCode];
     }
 
     public Fox(int row, int col, boolean newBorn) {

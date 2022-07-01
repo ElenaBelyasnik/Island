@@ -4,7 +4,7 @@ import ru.javarush.island.belyasnik.isLand.abstract_.Animal;
 import ru.javarush.island.belyasnik.isLand.annotations.OrganismParam;
 import ru.javarush.island.belyasnik.isLand.enums.IslandParam;
 
-@OrganismParam(typeName = "Утка", emoji = "\uD83E\uDD86", bioTypeCode = 9, weight = 1, maxNumberInCell = 200, speed = 4, kgFood = 0.15)
+@OrganismParam(typeName = "Утка", emoji = "\uD83E\uDD86", bioTypeCode = 9, maxNumberInCell = 200, speed = 4, kgFood = 0.15)
 public class Duck extends Animal {
     public static final String emoji; //!!!
     public static final String typeName; //!!!
@@ -16,13 +16,13 @@ public class Duck extends Animal {
 
 
     static {
-        Class cl = Duck.class;
+        Class<Duck> cl = Duck.class;
         emoji = Animal.getEmoji(cl); //!!!
         typeName = Animal.getTypeName(cl); //!!!
         bioTypeCode = Animal.getBioTypeCode(cl);
         maxNumberInCell = Animal.getMaxNumberInCell(cl);
         speed = Animal.getSpeed(cl);
-        menu = IslandParam.RACION_PARAM[bioTypeCode];
+        menu = IslandParam.RATION_PARAM[bioTypeCode];
     }
 
     public Duck(int row, int col, boolean newBorn) {

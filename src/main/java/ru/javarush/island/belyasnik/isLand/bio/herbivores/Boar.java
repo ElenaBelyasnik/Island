@@ -1,6 +1,7 @@
 package ru.javarush.island.belyasnik.isLand.bio.herbivores;
 
 import ru.javarush.island.belyasnik.isLand.abstract_.Animal;
+import ru.javarush.island.belyasnik.isLand.abstract_.Organism;
 import ru.javarush.island.belyasnik.isLand.annotations.OrganismParam;
 import ru.javarush.island.belyasnik.isLand.enums.IslandParam;
 
@@ -15,13 +16,13 @@ public class Boar extends Animal {
     public static final int[][] menu; // рацион (вид, вероятность, предел насыщения)/d
 
     static {
-        Class cl = Boar.class;
-        emoji = Animal.getEmoji(cl); //!!!
-        typeName = Animal.getTypeName(cl); //!!!
-        bioTypeCode = Animal.getBioTypeCode(cl);
-        maxNumberInCell = Animal.getMaxNumberInCell(cl);
-        speed = Animal.getSpeed(cl);
-        menu = IslandParam.RACION_PARAM[bioTypeCode];
+        Class<Boar> cl = Boar.class;
+        emoji = Organism.getEmoji(cl); //!!!
+        typeName = Organism.getTypeName(cl); //!!!
+        bioTypeCode = Organism.getBioTypeCode(cl);
+        maxNumberInCell = Organism.getMaxNumberInCell(cl);
+        speed = Organism.getSpeed(cl);
+        menu = IslandParam.RATION_PARAM[bioTypeCode];
     }
 
     public Boar(int row, int col, boolean newBorn) {

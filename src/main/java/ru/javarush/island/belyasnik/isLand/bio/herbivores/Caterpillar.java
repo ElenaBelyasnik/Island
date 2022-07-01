@@ -16,13 +16,13 @@ public class Caterpillar extends Animal {
 
 
     static {
-        Class cl = Caterpillar.class;
+        Class<Caterpillar> cl = Caterpillar.class;
         emoji = Animal.getEmoji(cl); //!!!
         typeName = Animal.getTypeName(cl); //!!!
         bioTypeCode = Animal.getBioTypeCode(cl);
         maxNumberInCell = Animal.getMaxNumberInCell(cl);
         speed = Animal.getSpeed(cl);
-        menu = IslandParam.RACION_PARAM[bioTypeCode];
+        menu = IslandParam.RATION_PARAM[bioTypeCode];
     }
 
     public Caterpillar(int row, int col, boolean newBorn) {

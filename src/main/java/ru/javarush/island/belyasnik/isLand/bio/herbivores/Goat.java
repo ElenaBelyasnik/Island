@@ -15,13 +15,13 @@ public class Goat extends Animal {
     public static final int[][] menu; // рацион (вид, вероятность, предел насыщения)/d
 
     static {
-        Class cl = Goat.class;
+        Class<Goat> cl = Goat.class;
         emoji = Animal.getEmoji(cl); //!!!
         typeName = Animal.getTypeName(cl); //!!!
         bioTypeCode = Animal.getBioTypeCode(cl);
         maxNumberInCell = Animal.getMaxNumberInCell(cl);
         speed = Animal.getSpeed(cl);
-        menu = IslandParam.RACION_PARAM[bioTypeCode];
+        menu = IslandParam.RATION_PARAM[bioTypeCode];
     }
 
     public Goat(int row, int col, boolean newBorn) {
