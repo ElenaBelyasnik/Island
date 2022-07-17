@@ -1,12 +1,14 @@
 package ru.javarush.island.belyasnik.isLand.entity;
 
+import ru.javarush.island.belyasnik.isLand.abstract_.Organism;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.Deque;
 import java.util.concurrent.LinkedBlockingDeque;
 
 public class IslandQueue<T> {
     //** очередь из организмов одного вида
-    private int capacity; // максимальная ёмкость очереди
+    private final int capacity; // максимальная ёмкость очереди
     private LinkedBlockingDeque<T> deque;
 
     public Object getMonitor() {
@@ -70,7 +72,7 @@ public class IslandQueue<T> {
     }
 
     // добавить новый организм сласса clazz  в очередь ячейки
-    public void addNewOrganismInQueue(Class clazz, int col, int row, boolean newBorn) {
+    public void addNewOrganismInQueue(Class<? extends Organism> clazz, int col, int row, boolean newBorn) {
         try {
             Class[] params = {int.class, int.class, boolean.class};
             this.deque.add((T) clazz.getConstructor(params).newInstance(col, row, newBorn));

@@ -62,7 +62,7 @@ public class IslandMap {
                 // заполнить очередь организмами в количестве maxNumberInCell/5
                 for (int n = 0; n < maxNumberInCell / 5; n++) {
                     // добавить организм в очередь ячейки
-                    islandQueueOrganism.addNewOrganismInQueue(clazz, row, col, false);
+                    islandQueueOrganism.addNewOrganismInQueue((Class<? extends Organism>) clazz, row, col, false);
                     //queueOrganism.add(clazz.getConstructor(params).newInstance(row1, row, false));
                 }
                 // создать объект ячейки и присвоить его массиву ячеек слоя,

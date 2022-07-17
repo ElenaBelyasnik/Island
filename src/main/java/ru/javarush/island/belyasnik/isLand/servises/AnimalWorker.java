@@ -35,6 +35,8 @@ public class AnimalWorker implements Callable<String>, AnimalActions {
 
     public void setCell(Cell cell) {
         this.cell = cell;
+        this.organism.setCol(cell.getCol());
+        this.organism.setRow(cell.getRow());
     }
 
 
@@ -120,6 +122,7 @@ public class AnimalWorker implements Callable<String>, AnimalActions {
 
     @Override
     public void move() {
+        Cell oldCell = this.cell;
         // получить длину пути, на который переместится животное
         int pathLength = Randomizer.get(0, IslandParam.HOW_MANY_STEPS[this.cell.getLayerIndex() + 1]);
         Cell currentCell = this.cell;
@@ -170,7 +173,7 @@ public class AnimalWorker implements Callable<String>, AnimalActions {
                         .getDeque()
                         .offerLast(organism);
                 if (successfulAdding) {
-                    successfulRemoval = removeFromQueue(organism, cell);
+                    successfulRemoval = removeFromQueue(organism, this.cell);
                 }
             }
         }
